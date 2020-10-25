@@ -50,6 +50,7 @@ public class HexMap : MonoBehaviour {
         neighbor.transform.SetParent(go.transform);
         neighbor.Selected = true;
         selection.Add(neighbor);
+        selection.map = this;
       }
 
     }

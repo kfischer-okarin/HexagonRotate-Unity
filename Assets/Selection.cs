@@ -1,21 +1,23 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 using UnityEngine;
 
 public class Selection : MonoBehaviour {
-  List<Hex> selected;
+  public HexMap map;
+  HashSet<Hex> selected;
 
   public void Add(Hex hex) {
     selected.Add(hex);
   }
 
-  public List<Hex> Selected {
+  public HashSet<Hex> Selected {
     get { return selected; }
   }
 
   public enum State {
     RISING,
     UP,
+    DRAGGING,
     SINKING,
     DOWN
   }
@@ -26,7 +28,7 @@ public class Selection : MonoBehaviour {
   }
 
   void Awake() {
-    selected = new List<Hex>();
+    selected = new HashSet<Hex>();
   }
 
   // Update is called once per frame
@@ -39,7 +41,9 @@ public class Selection : MonoBehaviour {
         }
       case State.UP:
         {
-          if (Input.GetMouseButtonDown(0)) {
+          if (Input.GetMouseButtonDown(0) && ClickedInSelectedRing) {
+            currentState = State.DRAGGING;
+          } else if (Input.GetMouseButtonUp(0)) {
             currentState = State.SINKING;
           }
           break;
@@ -49,6 +53,19 @@ public class Selection : MonoBehaviour {
           Sink();
           break;
         }
+    }
+  }
+
+  bool ClickedInSelectedRing {
+    get {
+      Vector3 clickedPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+      Vector3 selectionCenter = transform.TransformPoint(Vector3.zero);
+      Vector3 offsetFromSelection = clickedPosition - selectionCenter;
+
+      Vector3 offsetWithoutTransform = transform.InverseTransformVector(offsetFromSelection);
+      Vector3 clickPositionBeforeTransform = transform.parent.position + offsetWithoutTransform;
+      Hex clickedHex = map.HexAtPosition(clickPositionBeforeTransform);
+      return selected.Contains(clickedHex);
     }
   }
 
