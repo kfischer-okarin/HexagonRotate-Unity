@@ -21,28 +21,47 @@ public class HexMap : MonoBehaviour {
   }
 
   void Update() {
-    if (Input.GetMouseButtonDown(0)) {
-      if (selection == null) {
+    if (selection == null) {
+      if (Input.GetMouseButtonUp(0)) {
         SelectHex();
-      } else {
+      }
+    } else {
+      if (selection.CurrentState == Selection.State.DOWN) {
+          FinishSelection();
+      }
+    }
+  }
 
+  public Hex HexAtPosition(Vector3 position) {
+    HexCoord hexCoord = HexCoord.FromWorldPosition(position, 0.7f);
+    if (hexes.ContainsKey(hexCoord)) {
+      return hexes[hexCoord];
+    }
+    return null;
+  }
+
+  void SelectHex() {
+    Vector3 clickedPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+    Hex clickedHex = HexAtPosition(clickedPosition);
+    if (clickedHex != null && clickedHex.Position.Neighbors.All(neighbor => hexes.ContainsKey(neighbor))) {
+      GameObject go = Instantiate(selectionPrefab, clickedHex.transform);
+      selection = go.GetComponent<Selection>();
+      foreach (Hex neighbor in clickedHex.Position.Neighbors.Select(pos => hexes[pos])) {
+        neighbor.transform.SetParent(go.transform);
+        neighbor.Selected = true;
+        selection.Add(neighbor);
       }
 
     }
   }
 
-  void SelectHex() {
-    Vector3 clickedPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-    HexCoord clickedHexCoord = HexCoord.FromWorldPosition(clickedPosition, 0.7f);
-    if (hexes.ContainsKey(clickedHexCoord) && clickedHexCoord.Neighbors.All(neighbor => hexes.ContainsKey(neighbor))) {
-      Hex clickedHex = hexes[clickedHexCoord];
-      GameObject go = Instantiate(selectionPrefab, clickedHex.transform);
-      foreach (Hex neighbor in clickedHex.Position.Neighbors.Select(pos => hexes[pos])) {
-        neighbor.transform.SetParent(go.transform);
-        neighbor.Selected = true;
-      }
-      selection = go.GetComponent<Selection>();
+  void FinishSelection() {
+    foreach (Hex hex in selection.Selected) {
+      hex.transform.SetParent(transform);
+      hex.Selected = false;
     }
+    Destroy(selection.gameObject);
+    selection = null;
   }
 
   void SetHexCoord(Hex hex, HexCoord coord) {

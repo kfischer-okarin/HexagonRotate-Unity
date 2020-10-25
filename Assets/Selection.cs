@@ -4,13 +4,26 @@ using UnityEngine;
 
 public class Selection : MonoBehaviour {
   List<Hex> selected;
-  enum State {
+
+  public void Add(Hex hex) {
+    selected.Add(hex);
+  }
+
+  public List<Hex> Selected {
+    get { return selected; }
+  }
+
+  public enum State {
     RISING,
     UP,
     SINKING,
     DOWN
   }
-  State state = State.RISING;
+  State currentState = State.RISING;
+
+  public State CurrentState {
+    get { return currentState; }
+  }
 
   void Awake() {
     selected = new List<Hex>();
@@ -18,10 +31,22 @@ public class Selection : MonoBehaviour {
 
   // Update is called once per frame
   void Update() {
-    switch (state) {
+    switch (currentState) {
       case State.RISING:
         {
           Rise();
+          break;
+        }
+      case State.UP:
+        {
+          if (Input.GetMouseButtonDown(0)) {
+            currentState = State.SINKING;
+          }
+          break;
+        }
+      case State.SINKING:
+        {
+          Sink();
           break;
         }
     }
@@ -34,7 +59,16 @@ public class Selection : MonoBehaviour {
     Vector3 newPosition = transform.localPosition + Time.deltaTime * RISE_SPEED * Vector3.up;
     if (newPosition.y >= FLOAT_HEIGHT) {
       newPosition.y = FLOAT_HEIGHT;
-      state = State.UP;
+      currentState = State.UP;
+    }
+    transform.localPosition = newPosition;
+  }
+
+  void Sink() {
+    Vector3 newPosition = transform.localPosition + Time.deltaTime * RISE_SPEED * Vector3.down;
+    if (newPosition.y <= 0) {
+      newPosition.y = 0;
+      currentState = State.DOWN;
     }
     transform.localPosition = newPosition;
   }
