@@ -50,4 +50,17 @@ public struct HexCoord {
 
     return new HexCoord(rx, ry, rz);
   }
+
+  public HexCoord[] Neighbors {
+    get {
+      return new HexCoord[] {
+        new HexCoord(x + 1, y - 1, z),
+          new HexCoord(x + 1, y, z - 1),
+          new HexCoord(x - 1, y + 1, z),
+          new HexCoord(x, y + 1, z - 1),
+          new HexCoord(x - 1, y, z + 1),
+          new HexCoord(x, y - 1, z + 1)
+      };
+    }
+  }
 }

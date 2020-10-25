@@ -250,3 +250,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hexPrefab: {fileID: 7187401839923195843, guid: 564c9dd657d884f658a3350e860596a3, type: 3}
+  selectionPrefab: {fileID: 5752662829585301454, guid: f9b6ecc3b6b104309904feb65c3d54c0, type: 3}
