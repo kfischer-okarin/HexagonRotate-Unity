@@ -9,7 +9,7 @@ public class Hex : MonoBehaviour {
         get { return position; }
         set {
             this.position = value;
-            transform.position = value.WorldPosition(0.7f);
+            transform.position = value.WorldPosition(HexMap.HEX_SIZE);
         }
     }
 

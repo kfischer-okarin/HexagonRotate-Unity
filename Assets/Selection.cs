@@ -15,13 +15,13 @@ public class Selection : MonoBehaviour {
   }
 
   public enum State {
-    RISING,
-    UP,
+    RISING_ANIMATION,
+    NOT_DRAGGING,
     DRAGGING,
-    SINKING,
-    DOWN
+    SINKING_ANIMATION,
+    FINISHED
   }
-  State currentState = State.RISING;
+  State currentState = State.RISING_ANIMATION;
   float dragStartAngle;
   float dragStartRotation;
   float rotationVelocity;
@@ -95,39 +95,6 @@ public class Selection : MonoBehaviour {
 
   float DiffToTargetRotation => AngleDiff(CurrentRotation, TargetRotation);
 
-  void Update() {
-    switch (currentState) {
-      case State.RISING:
-        {
-          Rise();
-          break;
-        }
-      case State.UP:
-        {
-          if (Input.GetMouseButtonDown(0) && ClickedInSelectedRing) {
-            currentState = State.DRAGGING;
-            dragStartAngle = MouseAngle;
-            dragStartRotation = SnapRotation(CurrentRotation);
-          } else if (Input.GetMouseButtonUp(0)) {
-            currentState = State.SINKING;
-          }
-          break;
-        }
-      case State.DRAGGING:
-        {
-          UpdateRotationVelocity();
-          CurrentRotation += rotationVelocity;
-          HandleSnap();
-          break;
-        }
-      case State.SINKING:
-        {
-          Sink();
-          break;
-        }
-    }
-  }
-
   void UpdateRotationVelocity() {
     float force = DiffToTargetRotation;
     float damping = -rotationVelocity * 10f;
@@ -139,7 +106,7 @@ public class Selection : MonoBehaviour {
       CurrentRotation = TargetRotation;
       rotationVelocity = 0;
       if (!Input.GetMouseButton(0)) {
-        currentState = State.UP;
+        currentState = State.NOT_DRAGGING;
       }
     }
   }
@@ -147,21 +114,54 @@ public class Selection : MonoBehaviour {
   const float FLOAT_HEIGHT = 0.3f;
   const float RISE_SPEED = 2f;
 
-  void Rise() {
+  void AnimateRise() {
     Vector3 newPosition = transform.localPosition + Time.deltaTime * RISE_SPEED * Vector3.up;
     if (newPosition.y >= FLOAT_HEIGHT) {
       newPosition.y = FLOAT_HEIGHT;
-      currentState = State.UP;
+      currentState = State.NOT_DRAGGING;
     }
     transform.localPosition = newPosition;
   }
 
-  void Sink() {
+  void AnimateSink() {
     Vector3 newPosition = transform.localPosition + Time.deltaTime * RISE_SPEED * Vector3.down;
     if (newPosition.y <= 0) {
       newPosition.y = 0;
-      currentState = State.DOWN;
+      currentState = State.FINISHED;
     }
     transform.localPosition = newPosition;
+  }
+
+  void Update() {
+    switch (currentState) {
+      case State.RISING_ANIMATION:
+        {
+          AnimateRise();
+          break;
+        }
+      case State.NOT_DRAGGING:
+        {
+          if (Input.GetMouseButtonDown(0) && ClickedInSelectedRing) {
+            dragStartAngle = MouseAngle;
+            dragStartRotation = SnapRotation(CurrentRotation);
+            currentState = State.DRAGGING;
+          } else if (Input.GetMouseButtonUp(0)) {
+            currentState = State.SINKING_ANIMATION;
+          }
+          break;
+        }
+      case State.DRAGGING:
+        {
+          UpdateRotationVelocity();
+          CurrentRotation += rotationVelocity;
+          HandleSnap();
+          break;
+        }
+      case State.SINKING_ANIMATION:
+        {
+          AnimateSink();
+          break;
+        }
+    }
   }
 }
