@@ -28,5 +28,6 @@ public class Hex : MonoBehaviour {
     void Awake() {
         spriteRenderer = GetComponent<SpriteRenderer>();
         spriteRenderer.sprite = defaultSprite;
+        spriteRenderer.color = Random.ColorHSV(0, 1, 1, 1, 1, 1);
     }
 }

@@ -74,9 +74,9 @@ public class Selection : MonoBehaviour {
     }
   }
 
-  float CurrentRotation {
+  public float CurrentRotation {
     get { return transform.eulerAngles.z; }
-    set {
+    private set {
       float newValue = value % 360f;
       if (newValue < 0) {
         newValue += 360f;

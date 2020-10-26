@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 using UnityEngine;
@@ -9,6 +9,7 @@ public class HexMap : MonoBehaviour {
 
   Dictionary<HexCoord, Hex> hexes;
 
+  HexCoord selectionCenter;
   Selection selection;
 
   void Awake() {
@@ -52,13 +53,15 @@ public class HexMap : MonoBehaviour {
         selection.Add(neighbor);
         selection.map = this;
       }
-
+      selectionCenter = clickedHex.Position;
     }
   }
 
   void FinishSelection() {
     foreach (Hex hex in selection.Selected) {
       hex.transform.SetParent(transform);
+      hex.transform.localEulerAngles = Vector3.zero;
+      SetHexCoord(hex, hex.Position.Rotate(selection.CurrentRotation, selectionCenter));
       hex.Selected = false;
     }
     Destroy(selection.gameObject);

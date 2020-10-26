@@ -63,4 +63,17 @@ public struct HexCoord {
       };
     }
   }
+
+  public HexCoord Rotate(float degrees, HexCoord around) {
+    int dx = x - around.x;
+    int dy = y - around.y;
+    int dz = z - around.z;
+    for (int rotations = (int) Mathf.Round(degrees / 60f); rotations > 0; rotations--) {
+      int oldX = dx;
+      dx = -dy;
+      dy = -dz;
+      dz = -oldX;
+    }
+    return new HexCoord(around.x + dx, around.y + dy, around.z + dz);
+  }
 }
