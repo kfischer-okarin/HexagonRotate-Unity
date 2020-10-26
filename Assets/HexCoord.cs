@@ -19,7 +19,7 @@ public struct HexCoord {
     int r = z;
     return new Vector2(
       size * 1.5f * q,
-      size * (SQRT_3 / 2 * q + SQRT_3 * r)
+      - size * (SQRT_3 / 2 * q + SQRT_3 * r)
     );
   }
 
@@ -29,7 +29,7 @@ public struct HexCoord {
 
   public static HexCoord FromWorldPosition(Vector2 position, float size) {
     float x = (2.0f / 3) * position.x / size;
-    float z = (-1.0f / 3 * position.x + SQRT_3 / 3.0f * position.y) / size;
+    float z = (-1.0f / 3 * position.x + SQRT_3 / 3.0f * (-position.y)) / size;
     float y = -x - z;
 
     int rx = (int) Mathf.Round(x);

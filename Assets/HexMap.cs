@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 
 using UnityEngine;
@@ -73,8 +73,8 @@ public class HexMap : MonoBehaviour {
   List<HexCoord> MapCoordinates() {
     List<HexCoord> result = new List<HexCoord>();
     for (int x = -2; x <= 2; x++) {
-      for (int y = -3; y <= 2; y++) {
-        for (int z = -2; z <= 3; z++) {
+      for (int y = -2; y <= 3; y++) {
+        for (int z = -3; z <= 2; z++) {
           if (x + y + z != 0) {
             continue;
           }
